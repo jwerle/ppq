@@ -16,7 +16,10 @@
     "tcp",
     "messaging"
   ],
-  "author": "Joseph Werle",
+  "author": "Joseph Werle <joseph.werle@gmail.com>",
+  "contributors": [
+    "Omar Delarosa <thedelarosa@gmail.com>"
+  ],
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/jwerle/ppq/issues"
