@@ -17,7 +17,9 @@ var net = require('net')
 
 module.exports = pull;
 function pull (host) {
-  host.replace('tcp://', '');
+  if (-1 == host.indexOf('tcp://')) {
+    host = 'tcp://'+host;
+  }
   var u = url.parse(host);
   var server = net.createServer(onconnect);
   var stream = through(write);
@@ -27,12 +29,18 @@ function pull (host) {
     listening = true;
   });
 
+  stream.close = function () {
+    server.close(function () {
+      server.unref();
+      stream.end();
+    });
+  };
+
   return stream;
 
   function onconnect (socket) {
     var open = true;
     socket.pipe(stream);
-    console.log('connect')
     socket.on('end', cleanup);
     socket.on('close', cleanup);
     socket.on('error', onerror);
@@ -48,10 +56,12 @@ function pull (host) {
 
   function write (chunk) {
     var msg = null;
+    var d = null;
     if (null != chunk) {
       msg = new Message(chunk);
-      this.push(msg.toBuffer());
-      stream.emit('message', msg.toBuffer());
+      d = msg.shift();
+      this.push(d);
+      stream.emit('message', d);
     }
   }
 }

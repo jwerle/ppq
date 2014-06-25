@@ -23,31 +23,33 @@ function push (host) {
   }
 
   var u = url.parse(host);
-  var client = null;
   var stream = through();
-  var open = false;
 
   stream.send = function (data) {
-    var msg = null;
-    if (null != data) {
-      msg = new Message(data);
-      client.write(msg.toBuffer());
-    }
+    var client = null;
+    // attempt connection
+    void function connect () {
+      client = net.connect({port:u.port}, function () {
+        var msg = null;
+        if (null != data) {
+          msg = new Message();
+          msg.push(data);
+          client.write(msg.toBuffer());
+          client.end();
+        }
+      });
+
+      client.on('error', function (err) {
+        if ('ECONNREFUSED' == err.code) {
+          return process.nextTick(connect);
+        }
+      });
+
+      stream.pipe(client);
+    }();
+
     return this;
   };
-
-  // attempt connection
-  void function connect () {
-    client = net.connect(u.port, u.hostname, function () {
-     open = true;
-    });
-
-    client.on('error', function (err) {
-      if ('ECONNREFUSED' == err.code) {
-        return connect();
-      }
-    });
-  }();
 
   return stream;
 }
