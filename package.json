@@ -1,0 +1,29 @@
+{
+  "name": "ppq",
+  "version": "0.0.1",
+  "description": "Push/Pull TCP Messaging",
+  "main": "index.js",
+  "scripts": {
+    "test": "node test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jwerle/ppq.git"
+  },
+  "keywords": [
+    "push",
+    "pull",
+    "tcp",
+    "messaging"
+  ],
+  "author": "Joseph Werle",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/jwerle/ppq/issues"
+  },
+  "homepage": "https://github.com/jwerle/ppq",
+  "dependencies": {
+    "amp-message": "^0.1.2",
+    "through": "^2.3.4"
+  }
+}
