@@ -24,6 +24,7 @@
   "homepage": "https://github.com/jwerle/ppq",
   "dependencies": {
     "amp-message": "^0.1.2",
+    "is-localhost": "0.0.1",
     "through": "^2.3.4"
   }
 }

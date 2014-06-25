@@ -7,29 +7,38 @@ var Message = require('amp-message')
   , net = require('net')
   , url = require('url')
   , through = require('through')
+  , isLocalhost = require('is-localhost')
 
 /**
- * Pushes a message to a given host
+ * Pushes a message to a given addr
  * over TCP.
  *
  * @api public
- * @param {String} host
+ * @param {String} addr
  */
 
 module.exports = push;
-function push (host) {
-  if (-1 == host.indexOf('tcp://')) {
-    host = 'tcp://'+host;
+function push (addr) {
+  if (Number(addr) == Number(addr)) {
+    addr = 'tcp://127.0.0.1:'+ addr;
+  } else if (-1 == addr.indexOf('tcp://')) {
+    addr = 'tcp://' + addr;
   }
 
-  var u = url.parse(host);
+  var opts = {};
+  var u = url.parse(addr);
   var stream = through();
+
+  opts.port = u.port;
+  if (!isLocalhost(u.hostname)) {
+    opts.host = u.hostname;
+  }
 
   stream.send = function (data) {
     var client = null;
     // attempt connection
     void function connect () {
-      client = net.connect({port:u.port}, function () {
+      client = net.connect(opts, function () {
         var msg = null;
         if (null != data) {
           msg = new Message();

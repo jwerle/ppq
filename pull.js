@@ -9,20 +9,25 @@ var net = require('net')
   , url = require('url')
 
 /**
- * Pull messages from host
+ * Pull messages from address
  *
  * @api public
- * @param {String} host
+ * @param {String} addr
  */
 
 module.exports = pull;
-function pull (host) {
-  if (-1 == host.indexOf('tcp://')) {
-    host = 'tcp://'+host;
+function pull (addr) {
+  if (Number(addr) == Number(addr)) {
+    addr = 'tcp://127.0.0.1:'+ addr;
   }
-  var u = url.parse(host);
+
+  if (-1 == addr.indexOf('tcp://')) {
+    addr = 'tcp://'+addr;
+  }
+
+  var u = url.parse(addr);
   var server = net.createServer(onconnect);
-  var stream = through(write);
+  var stream = through();
   var listening = false;
 
   server.listen(u.port, function () {
@@ -40,28 +45,27 @@ function pull (host) {
 
   function onconnect (socket) {
     var open = true;
-    socket.pipe(stream);
     socket.on('end', cleanup);
     socket.on('close', cleanup);
     socket.on('error', onerror);
+    socket.on('readable', function () {
+      var msg = null;
+      var d = null;
+      var chunk = null;
+      while ((chunk = socket.read())) {
+        msg = new Message(chunk);
+        d = msg.shift();
+        stream.emit('message', d);
+      }
+    });
     function cleanup () {
       if (false == open) { return; }
       socket.unpipe(stream);
+      open = false;
     }
     function onerror (err) {
       stream.emit('error', err);
       cleanup();
-    }
-  }
-
-  function write (chunk) {
-    var msg = null;
-    var d = null;
-    if (null != chunk) {
-      msg = new Message(chunk);
-      d = msg.shift();
-      this.push(d);
-      stream.emit('message', d);
     }
   }
 }
