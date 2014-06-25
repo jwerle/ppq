@@ -15,7 +15,7 @@ Pull server
 
 ```js
 var pull = require('ppq/pull')
-var server = pull('0.0.0.0:3000');
+var server = pull(3000);
 
 server.on('message', function (msg) {
   console.log(msg);
@@ -40,10 +40,21 @@ setInterval(function () {
 
 ## api
 
-### pull(addr)
+### pull(port)
 
-Returns a readable and writable stream
+Returns a readable and writable stream listening on `port`.
 
+#### #close
+
+Closes the server listening on `port`.
+
+### push(addr)
+
+Returns a readable and writable stream bound to `addr`.
+
+#### #send
+
+Sends an arbitrary message to bound `addr`.
 
 ## license
 

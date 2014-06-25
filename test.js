@@ -11,12 +11,11 @@ var expected = 4;
 var addr = '0.0.0.0:5000'
 
 // pull server
-var serv = ppq.pull(addr);
-assert(serv);
+var serv = ppq.pull(5000);
 
 // push client
 var a = ppq.push(addr);
-var b = ppq.push(5000);
+var b = ppq.push(addr);
 
 serv.on('message', function (msg) {
   console.log('message %s', msg);

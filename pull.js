@@ -12,25 +12,16 @@ var net = require('net')
  * Pull messages from address
  *
  * @api public
- * @param {String} addr
+ * @param {Number} port
  */
 
 module.exports = pull;
-function pull (addr) {
-  if (Number(addr) == Number(addr)) {
-    addr = 'tcp://127.0.0.1:'+ addr;
-  }
-
-  if (-1 == addr.indexOf('tcp://')) {
-    addr = 'tcp://'+addr;
-  }
-
-  var u = url.parse(addr);
+function pull (port) {
   var server = net.createServer(onconnect);
   var stream = through();
   var listening = false;
 
-  server.listen(u.port, function () {
+  server.listen(port, function () {
     listening = true;
   });
 
