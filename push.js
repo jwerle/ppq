@@ -36,6 +36,15 @@ function push (addr) {
 
   stream.send = function (data) {
     var client = null;
+    var alt = {};
+    // presevre `Error' instances during
+    // serialization
+    if (data instanceof Error) {
+      Object.getOwnPropertyNames(data).forEach(function (key) {
+        alt[key] = this[key];
+      }, data);
+      data = alt;
+    }
     // attempt connection
     void function connect () {
       client = net.connect(opts, function () {

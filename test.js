@@ -12,10 +12,12 @@ var addr = '0.0.0.0:5000'
 
 // pull server
 var serv = ppq.pull(5000);
+var eserv = ppq.pull(6000);
 
 // push client
 var a = ppq.push(addr);
 var b = ppq.push(addr);
+var e = ppq.push(6000);
 
 serv.on('message', function (msg) {
   console.log('message %s', msg);
@@ -24,6 +26,11 @@ serv.on('message', function (msg) {
   if (0 == --expected) {
     serv.close();
   }
+});
+
+eserv.on('message', function (msg) {
+  assert('wtf!' == msg.message);
+  eserv.close();
 });
 
 setTimeout(function () {
@@ -41,3 +48,7 @@ setTimeout(function () {
 setTimeout(function () {
   b.send('beep');
 }, 100);
+
+setTimeout(function () {
+  e.send(new Error("wtf!"));
+}, 200);
