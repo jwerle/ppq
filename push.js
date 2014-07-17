@@ -29,6 +29,8 @@ function push (addr) {
   var u = url.parse(addr);
   var stream = through();
 
+  stream.setMaxListeners(Infinity);
+
   opts.port = u.port;
   if (!isLocalhost(u.hostname)) {
     opts.host = u.hostname;
